@@ -5,7 +5,7 @@ import conf from '../conf/conf';
 interface AccountType {
   email: string;
   password: string;
-  name: any;
+  name?: string;
 }
 
 export class AuthService {
@@ -35,7 +35,7 @@ export class AuthService {
     }
   }
 
-  async login({email, password}: Omit<AccountType, 'name'>): Promise<any> {
+  async login({email, password}: AccountType): Promise<any> {
     try {
       return await this.account.createEmailSession(email, password)
     } catch (error) {
