@@ -2,7 +2,7 @@ import {Account, Client, ID} from 'appwrite';
 
 import conf from '../conf/conf';
 
-interface AccountType {
+interface UserAccount {
   email: string;
   password: string;
   name?: string;
@@ -20,7 +20,7 @@ export class AuthService {
     this.account = new Account(this.client);
   }
 
-  async createAccount({email, password, name}: AccountType): Promise<any> {
+  async createAccount({email, password, name}: UserAccount): Promise<any> {
     try {
       const response =
           await this.account.create(ID.unique(), email, password, name);
@@ -35,7 +35,7 @@ export class AuthService {
     }
   }
 
-  async login({email, password}: AccountType): Promise<any> {
+  async login({email, password}: UserAccount): Promise<any> {
     try {
       return await this.account.createEmailSession(email, password)
     } catch (error) {
