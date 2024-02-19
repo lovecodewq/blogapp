@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Login from './components/login'
+import service from './appwrite/service';
 
 function App() {
   const [count, setCount] = useState(0)

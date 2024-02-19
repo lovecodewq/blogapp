@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import authService from '../appwrite/auth';
+import service from '../appwrite/service';
 
 const Login = () => {
     const [loggedInUser, setLoggedInUser] = useState(null);
@@ -7,10 +7,15 @@ const Login = () => {
     const [password, setPassword] = useState('');
     const [name, setName] = useState('');
 
-    async function login( email:string, password:string ):Promise<any> {
-        await authService.login({ email, password });
-        setLoggedInUser(await authService.getCurrentUser());
+    async function login(email: string, password: string): Promise<any> {
+        await service.login({ email, password });
+        setLoggedInUser(await service.getCurrentUser());
+
+        console.log("debug list documents");
+        const res = await service.getDocument('65d08256766eea7a88fb');
+        console.log(res);
     };
+
     return (
         <div>
             <p>
@@ -29,7 +34,7 @@ const Login = () => {
                 <button
                     type="button"
                     onClick={async () => {
-                        authService.createAccount({ email, password, name });
+                        service.createAccount({ email, password, name });
                     }}
                 >
                     Register
@@ -38,7 +43,7 @@ const Login = () => {
                 <button
                     type="button"
                     onClick={async () => {
-                        authService.logout();
+                        service.logout();
                         setLoggedInUser(null);
                     }}
                 >
