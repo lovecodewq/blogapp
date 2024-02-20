@@ -12,7 +12,7 @@ const Login = () => {
         setLoggedInUser(await service.getCurrentUser());
 
         console.log("debug list documents");
-        const res = await service.getDocument('65d08256766eea7a88fb');
+        const res = await service.listDocuments();
         console.log(res);
     };
 

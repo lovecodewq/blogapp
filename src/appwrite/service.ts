@@ -1,4 +1,4 @@
-import { Account, Client, ID, Databases, Storage, Query } from 'appwrite';
+import {Account, Client, Databases, ID, Query, Storage} from 'appwrite';
 
 import conf from '../conf/conf';
 
@@ -28,17 +28,16 @@ class Service {
     this.account = new Account(this.client);
     this.databases = new Databases(this.client);
     this.storage = new Storage(this.client);
-
   }
 
   // account
-  async createAccount({ email, password, name }: UserAccount): Promise<any> {
+  async createAccount({email, password, name}: UserAccount): Promise<any> {
     try {
       const response =
-        await this.account.create(ID.unique(), email, password, name);
+          await this.account.create(ID.unique(), email, password, name);
       console.log(response);
       if (response) {
-        return this.login({ email, password });
+        return this.login({email, password});
       } else {
         return response;
       }
@@ -47,7 +46,7 @@ class Service {
     }
   }
 
-  async login({ email, password }: UserAccount): Promise<any> {
+  async login({email, password}: UserAccount): Promise<any> {
     try {
       return await this.account.createEmailSession(email, password)
     } catch (error) {
@@ -73,44 +72,44 @@ class Service {
   // document
   async getDocument(documentId: string): Promise<any> {
     try {
-      const res = await this.databases.getDocument(conf.databaseId, conf.collectionId, documentId);
+      const res = await this.databases.getDocument(
+          conf.databaseId, conf.collectionId, documentId);
       return res;
     } catch (error) {
       console.log('Appwrite service :: getDocument :: ', error);
     }
   }
 
-  async listDocuments(queries = [Query.equal("status", "active")]): Promise<any> {
+  async listDocuments(queries = [Query.equal('status', ['active'])]):
+      Promise<any> {
     try {
-      const respose = await this.databases.listDocuments(conf.databaseId, conf.collectionId, queries);
+      const respose = await this.databases.listDocuments(
+          conf.databaseId, conf.collectionId, queries);
       return respose;
     } catch (error) {
       console.log('Appwrite service :: listDocuments :: ', error);
     }
   }
 
-  async creatDocument({ id, title, content, featuredImage, status, userId }: Document): Promise<any> {
+  async creatDocument({id, title, content, featuredImage, status, userId}:
+                          Document): Promise<any> {
     try {
-      const respose = await this.databases.createDocument(conf.databaseId, conf.collectionId, id, {
-        title,
-        content,
-        featuredImage,
-        status,
-        userId
-      });
+      const respose = await this.databases.createDocument(
+          conf.databaseId, conf.collectionId, id,
+          {title, content, featuredImage, status, userId});
       return respose;
     } catch (error) {
       console.log('Appwrite service :: listDocuments :: ', error);
     }
   }
-  async updateDocument(id: string, { title, content, featuredImage, status }: Omit<Document, 'id' | 'userId'>): Promise<any> {
+  async updateDocument(
+      id: string,
+      {title, content, featuredImage, status}: Omit<Document, 'id'|'userId'>):
+      Promise<any> {
     try {
-      const res = await this.databases.updateDocument(conf.databaseId, conf.collectionId, id, {
-        title,
-        content,
-        featuredImage,
-        status
-      });
+      const res = await this.databases.updateDocument(
+          conf.databaseId, conf.collectionId, id,
+          {title, content, featuredImage, status});
       return res;
     } catch (error) {
       console.log('Appwrite service :: updateDocument :: ', error);
@@ -119,49 +118,38 @@ class Service {
 
   async deleteDocument(id: string): Promise<boolean> {
     try {
-      const res = await this.databases.deleteDocument(conf.databaseId, conf.collectionId, id);
+      const res = await this.databases.deleteDocument(
+          conf.databaseId, conf.collectionId, id);
       console.log(res);
       return true;
     } catch (error) {
-      console.log('Appwrite service :: updateDocument :: ', error);
+      console.log('Appwrite service :: deleteDocument :: ', error);
       return false;
     }
   }
 
   // storage
-  async createFile(file:File): Promise<any> {
+  async createFile(file: File): Promise<any> {
     try {
-      return await this.storage.createFile(
-        conf.bucketId,
-        ID.unique(),
-        file
-      )
+      return await this.storage.createFile(conf.bucketId, ID.unique(), file)
     } catch (error) {
-      console.log("Appwrite service :: createFile() :: ", error);
+      console.log('Appwrite service :: createFile() :: ', error);
       return false
     }
   }
 
-  async deleteFile(fileId:string):Promise<any> {
+  async deleteFile(fileId: string): Promise<any> {
     try {
-      return await this.storage.deleteFile(
-        conf.bucketId,
-        fileId
-
-      )
+      return await this.storage.deleteFile(conf.bucketId, fileId)
     } catch (error) {
-      console.log("Appwrite service :: deleteFile() :: ", error);
+      console.log('Appwrite service :: deleteFile() :: ', error);
       return false
     }
   }
 
-  getFilePreview(fileId: string): any{
-    return this.storage.getFilePreview(
-      conf. bucketId,
-      fileId
-    ).href
+  getFilePreview(fileId: string): any {
+    return this.storage.getFilePreview(conf.bucketId, fileId).href
   }
-
 }
 
 const service = new Service()
