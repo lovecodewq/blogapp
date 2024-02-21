@@ -56,7 +56,7 @@ const router = createBrowserRouter([
         )
       }, 
       {
-        path: "/edit-post:slug",
+        path: "/edit-post/:slug",
         element: (
           <Protected authentication={true}>
             <EditPost />
@@ -64,7 +64,7 @@ const router = createBrowserRouter([
         )
       },
       {
-        path: "/post:slug",
+        path: "/post/:slug",
         element: (
           <Protected authentication={true}>
             <Post></Post>
@@ -80,6 +80,5 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Provider store={store}>
       <RouterProvider router={router} />
     </Provider>
-    <App />
   </React.StrictMode>,
 )
