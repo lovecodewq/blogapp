@@ -1,14 +1,27 @@
+import { useEffect, useState } from 'react';
 import React from 'react'
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 interface ProtectedProps {
-    children: React.ReactNode;
-    authentication: boolean;
+  children: React.ReactNode;
+  authentication: boolean;
 }
 
-function Potected({children, authentication=true}: ProtectedProps) {
-  return (
-    <div>{children}</div>
-  )
+function Protected({ children, authentication = true }: ProtectedProps) {
+  const authStatus = useSelector((state) => state.auth.status)
+  const navigate = useNavigate();
+  const [loader, setLoader] = useState(true);
+
+  useEffect(() => {
+    if (authentication && authStatus !== authentication) {
+      navigate('/login');
+    } else if (!authentication && authStatus !== authentication) {
+      navigate("/");
+    }
+    setLoader(false);
+  }, [authStatus, authentication, navigate]);
+  return loader ? null : <>{children}</>
 }
 
-export default Potected
+export default Protected
