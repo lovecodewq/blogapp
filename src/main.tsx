@@ -10,6 +10,9 @@ import Login from './pages/Login.tsx'
 import Protected from './components/AuthLayout.tsx'
 import Signup from './pages/Signup.tsx'
 import AllPosts from './pages/AllPosts.tsx'
+import AddPost from './pages/AddPost.tsx'
+import EditPost from './pages/EditPost.tsx'
+import Post from './pages/Post.tsx'
 
 const router = createBrowserRouter([
   {
@@ -41,6 +44,30 @@ const router = createBrowserRouter([
         element: (
           <Protected authentication={true}>
             <AllPosts />
+          </Protected>
+        )
+      },
+      {
+        path: "/add-post",
+        element: (
+          <Protected authentication={true}>
+            <AddPost />
+          </Protected>
+        )
+      }, 
+      {
+        path: "/edit-post:slug",
+        element: (
+          <Protected authentication={true}>
+            <EditPost />
+          </Protected>
+        )
+      },
+      {
+        path: "/post:slug",
+        element: (
+          <Protected authentication={true}>
+            <Post></Post>
           </Protected>
         )
       }
