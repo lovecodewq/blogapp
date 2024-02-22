@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import React from 'react'
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { RootState } from '../store/store';
 
 interface ProtectedProps {
   children: React.ReactNode;
@@ -9,7 +10,7 @@ interface ProtectedProps {
 }
 
 function Protected({ children, authentication = true }: ProtectedProps) {
-  const authStatus = useSelector((state) => state.auth.status)
+  const authStatus = useSelector((state: RootState) => state.auth.status)
   const navigate = useNavigate();
   const [loader, setLoader] = useState(true);
 
