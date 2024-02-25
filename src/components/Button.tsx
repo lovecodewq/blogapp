@@ -3,8 +3,8 @@ import React, { ReactNode, ButtonHTMLAttributes } from 'react'
 interface ButtonProps extends ButtonHTMLAttributes<HTMLDivElement> {
     children: ReactNode,
     type?: 'button' | 'submit' | 'reset'
-    bgColor: string,
-    textColor: string,
+    bgColor?: string,
+    textColor?: string,
     className: string,
 }
 
