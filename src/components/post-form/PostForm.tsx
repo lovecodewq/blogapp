@@ -7,17 +7,22 @@ import Select from '../Select'
 import service from '../../appwrite/service'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Document } from '../../appwrite/service'
+import type { Document } from '../../appwrite/service'
 import { RootState } from '../../store/store'
 
 const PostForm: React.FC<Document> = (post) => {
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
-        tittle: post?.title || '',
+        title: post?.title || '',
         slug: post?.slug || '',
         content: post?.content || '',
         status: post?.status || 'active',
+        image: [],
+        $id: undefined,
+        id: undefined,
+        userId: undefined,
+        featuredImage: undefined,
       },
     })
   const navigate = useNavigate()
@@ -28,15 +33,17 @@ const PostForm: React.FC<Document> = (post) => {
         ? await service.createFile(data.image[0])
         : null
 
-      if (file) {
+      if (file && post.featuredImage) {
         service.deleteFile(post.featuredImage)
       }
-      const dbPost = await service.updateDocument(post.$id, {
-        ...data,
-        featuredImage: file ? file.$id : undefined,
-      })
-      if (dbPost) {
-        navigate(`/post/${dbPost.$id}`)
+      if (post.$id) {
+        const dbPost = await service.updateDocument(post.$id, {
+          ...data,
+          featuredImage: file ? file.$id : undefined,
+        })
+        if (dbPost) {
+          navigate(`/post/${dbPost.$id}`)
+        }
       }
     } else {
       const file = await service.createFile(data.image[0])
@@ -54,7 +61,7 @@ const PostForm: React.FC<Document> = (post) => {
       }
     }
   }
-  const slugTransform = useCallback((value: any) => {
+  const slugTransform = useCallback((value?: string) => {
     if (value && typeof value === 'string')
       return value
         .trim()
@@ -63,9 +70,12 @@ const PostForm: React.FC<Document> = (post) => {
         .replace(/\s/g, '-')
   }, [])
   React.useEffect(() => {
-    watch((value: string, { name }) => {
-      if (name === 'title') {
-        setValue('slug', slugTransform(value.title), { shouldValidate: true })
+    watch((value, { name }) => {
+      if (name === 'title' && value.title) {
+        const slug = slugTransform(value.title)
+        if (slug) {
+          setValue('slug', slug, { shouldValidate: true })
+        }
       }
     })
   }, [watch, slugTransform, setValue])
@@ -84,9 +94,11 @@ const PostForm: React.FC<Document> = (post) => {
           className='mb-4'
           {...register('slug', { required: true })}
           onInput={(e) => {
-            setValue('slug', slugTransform(e.currentTarget.value), {
-              shouldValidate: true,
-            })
+            const slug = slugTransform(e.currentTarget.value)
+            slug &&
+              setValue('slug', slug, {
+                shouldValidate: true,
+              })
           }}
         />
         <RTE
@@ -104,7 +116,7 @@ const PostForm: React.FC<Document> = (post) => {
           accept='image/png, image/jpg, image/jpeg'
           {...register('image', { required: !post })}
         />
-        {post && (
+        {post && post.featuredImage && (
           <div className='w-full mb-4'>
             <img
               src={service.getFilePreview(post.featuredImage)}

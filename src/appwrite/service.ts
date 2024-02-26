@@ -1,4 +1,5 @@
-import { Account, Client, Databases, ID, Query, Storage } from 'appwrite'
+import {Account, Client, Databases, ID, Query, Storage} from 'appwrite';
+import type {Models} from 'appwrite'
 
 import conf from '../conf/conf'
 
@@ -8,14 +9,14 @@ interface UserAccount {
   name?: string
 }
 interface Document {
-  $id:string
-  id: string
-  title: string
-  content: string
-  featuredImage: string
-  status: string
-  userId: string
-  slug: string
+  $id?:string
+  id?: string
+  title?: string
+  content?: string
+  featuredImage?: string
+  status?: string
+  userId?: string
+  slug?: string
   image: File[]
 }
 
@@ -112,7 +113,7 @@ class Service {
     featuredImage,
     status,
     userId,
-  }: Document): Promise<any> {
+  }:  Omit<Document, '$id'>): Promise<any> {
     try {
       const respose = await this.databases.createDocument(
         conf.databaseId,
@@ -127,7 +128,7 @@ class Service {
   }
   async updateDocument(
     id: string,
-    { title, content, featuredImage, status }: Omit<Document, 'id' | 'userId'>
+    { title, content, featuredImage, status }: Omit<Document, '$id' | 'id' | 'userId'>
   ): Promise<any> {
     try {
       const res = await this.databases.updateDocument(
@@ -158,16 +159,16 @@ class Service {
   }
 
   // storage
-  async createFile(file: File): Promise<any> {
+  async createFile(file: File): Promise<Models.File> {
     try {
       return await this.storage.createFile(conf.bucketId, ID.unique(), file)
     } catch (error) {
-      console.log('Appwrite service :: createFile() :: ', error)
-      return false
+      console.log('Appwrite service :: createFile() :: ', error);
+      throw error;
     }
   }
 
-  async deleteFile(fileId: string): Promise<any> {
+  async deleteFile(fileId: string): Promise<{}> {
     try {
       return await this.storage.deleteFile(conf.bucketId, fileId)
     } catch (error) {

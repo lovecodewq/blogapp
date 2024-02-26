@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import LogoutBtn from './LogoutBtn'
 import { useNavigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { RootState } from '../../store/store'
+import type { RootState } from '../../store/store'
 
 function Header() {
   const authStatus = useSelector((state: RootState) => state.auth.status)
