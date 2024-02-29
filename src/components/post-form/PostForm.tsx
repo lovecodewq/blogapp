@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react'
-import { useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import Button from '../Button'
 import Input from '../Input'
 import RTE from '../RTE'
@@ -27,7 +27,7 @@ const PostForm: React.FC<Document> = (post) => {
     })
   const navigate = useNavigate()
   const userData = useSelector((state: RootState) => state.auth.userData)
-  const submit = async (data: Document) => {
+  const submit: SubmitHandler<Document> = async (data: Document) => {
     if (post) {
       const file = data.image[0]
         ? await service.createFile(data.image[0])
