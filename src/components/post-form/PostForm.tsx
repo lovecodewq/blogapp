@@ -10,7 +10,7 @@ import { useNavigate } from 'react-router-dom'
 import type { Document } from '../../appwrite/service'
 import { RootState } from '../../store/store'
 
-const PostForm: React.FC<Document> = (post) => {
+const PostForm: React.FC<Document | null> = (post) => {
   const { register, handleSubmit, watch, setValue, control, getValues } =
     useForm({
       defaultValues: {
