@@ -1,5 +1,5 @@
 import {Account, Client, Databases, ID, Query, Storage} from 'appwrite';
-import type {Models} from 'appwrite'
+import type {Models, AppwriteException} from 'appwrite'
 
 import conf from '../conf/conf'
 
@@ -58,7 +58,8 @@ class Service {
     try {
       return await this.account.createEmailSession(email, password)
     } catch (error) {
-      throw error
+      const appwriteError = error as AppwriteException;
+      throw appwriteError;
     }
   }
   async getCurrentUser(): Promise<any> {
