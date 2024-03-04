@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from 'react'
+import React, { useEffect, useReducer, useState } from 'react'
 import service from '../appwrite/service'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from './Button'
@@ -6,27 +6,30 @@ import Input from './Input'
 import Logo from './Logo'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { login } from '../store/authSlice'
+import { login as authLogin } from '../store/authSlice'
 
 function Login() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { register, handleSubmit } = useForm()
   const [error, setError] = useState('')
-  const onLogin = async (data) => {
+  const login = async (data) => {
     setError('')
     try {
       const session = await service.login(data)
+      console.log(session)
       if (session) {
         const userData = await service.getCurrentUser()
         if (userData) {
-          dispatch(login(userData))
+          console.log(userData)
+          dispatch(authLogin(userData))
           navigate('/')
         }
       }
-    } catch (error) {}
+    } catch (error) {
+        setError(error.message)
+    }
   }
-
   return (
     <div className='flex items-center justify-center w-full'>
       <div
