@@ -9,13 +9,15 @@ interface PostCardProps {
 }
 
 function PostCard({ $id, title, featuredImage }: PostCardProps) {
+  const image_uri = service.getFilePreview(featuredImage);
+  console.log("image_uri: ", image_uri);
   return (
     <Link to={`/post/${$id}`}>
       <div className='w-full bg-gray-100 rounded-xl p-4'>
         <div className='w-full justify-center mb-4'>
           <img
             className='rounded-xl'
-            src={service.getFilePreview(featuredImage)}
+            src={image_uri}
             alt={title}
           />
         </div>

@@ -7,6 +7,7 @@ import Logo from './Logo'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { login } from '../store/authSlice'
+import type { AppwriteException } from 'appwrite'
 
 function Signup() {
   const navigate = useNavigate()
@@ -22,7 +23,8 @@ function Signup() {
         if (userData) dispatch(login({ userData }))
       }
     } catch (error) {
-      setError(error.message)
+      const appwriteError = error as AppwriteException
+      setError(appwriteError.message)
     }
   }
 

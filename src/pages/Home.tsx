@@ -6,9 +6,6 @@ import PostCard from '../components/PostCard'
 import service from '../appwrite/service'
 
 function Home() {
-  useEffect(() => {
-    console.log('Home')
-  }, [])
   const [posts, setPosts] = useState([])
 
   useEffect(() => {

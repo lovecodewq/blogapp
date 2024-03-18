@@ -18,11 +18,10 @@ function Login() {
     setError('')
     try {
       const session = await service.login(data)
-      console.log(session)
       if (session) {
         const userData = await service.getCurrentUser()
         if (userData) {
-          console.log(userData)
+          console.log(`user data: ${JSON.stringify(userData, null, 2)}`)
           dispatch(authLogin(userData))
           navigate('/')
         }
