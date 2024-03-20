@@ -1,4 +1,3 @@
-import React from 'react'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import Container from '../components/container/Container'
@@ -20,7 +19,7 @@ function Home() {
       <div className='w-full py-8'>
         <Container>
           <div className='flex flex-wrap'>
-            <h1>Login to read posts</h1>
+            <h1>There are no post yet!</h1>
           </div>
         </Container>
       </div>

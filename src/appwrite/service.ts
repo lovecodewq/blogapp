@@ -1,5 +1,13 @@
-import {Account, Client, Databases, ID, Query, Storage} from 'appwrite';
-import type {Models, AppwriteException} from 'appwrite'
+import {
+  Account,
+  Client,
+  Databases,
+  ID,
+  Query,
+  Storage,
+  Models,
+  AppwriteException,
+} from 'appwrite'
 
 import conf from '../conf/conf'
 
@@ -8,9 +16,12 @@ interface UserAccount {
   password: string
   name?: string
 }
+interface UserPreferences {
+  darkMode: boolean
+}
 interface Document {
-  $id?:string
-  id?: string
+  $id?: string
+  id: string
   title?: string
   content?: string
   featuredImage?: string
@@ -35,7 +46,13 @@ class Service {
   }
 
   // account
-  async createAccount({ email, password, name }: UserAccount): Promise<any> {
+  async createAccount({
+    email,
+    password,
+    name,
+  }: UserAccount): Promise<
+    Models.User<UserPreferences> | Promise<Models.Session> | void
+  > {
     try {
       const response = await this.account.create(
         ID.unique(),
@@ -43,26 +60,28 @@ class Service {
         password,
         name
       )
-      console.log(response)
       if (response) {
         return this.login({ email, password })
       } else {
+        console.log(response)
         return response
       }
     } catch (error) {
+      console.log('Appwrite service :: createAccount :: ', error)
       throw error
     }
   }
 
-  async login({ email, password }: UserAccount): Promise<any> {
+  async login({ email, password }: UserAccount): Promise<Models.Session> {
     try {
       return await this.account.createEmailSession(email, password)
     } catch (error) {
-      const appwriteError = error as AppwriteException;
-      throw appwriteError;
+      const appwriteError = error as AppwriteException
+      throw appwriteError
     }
   }
-  async getCurrentUser(): Promise<any> {
+
+  async getCurrentUser(): Promise<Models.User<UserPreferences> | null> {
     try {
       return await this.account.get()
     } catch (error) {
@@ -70,7 +89,8 @@ class Service {
     }
     return null
   }
-  async logout(): Promise<any> {
+
+  async logout(): Promise<void> {
     try {
       await this.account.deleteSessions()
     } catch (error) {
@@ -79,7 +99,7 @@ class Service {
   }
 
   // document
-  async getDocument(documentId: string): Promise<any> {
+  async getDocument(documentId: string): Promise<Models.Document | void> {
     try {
       const res = await this.databases.getDocument(
         conf.databaseId,
@@ -94,7 +114,7 @@ class Service {
 
   async listDocuments(
     queries = [Query.equal('status', ['active'])]
-  ): Promise<any> {
+  ): Promise<Models.DocumentList<Models.Document> | void> {
     try {
       const respose = await this.databases.listDocuments(
         conf.databaseId,
@@ -114,7 +134,7 @@ class Service {
     featuredImage,
     status,
     userId,
-  }:  Omit<Document, '$id'>): Promise<any> {
+  }: Omit<Document, '$id'>): Promise<Models.Document | void> {
     try {
       const respose = await this.databases.createDocument(
         conf.databaseId,
@@ -129,8 +149,13 @@ class Service {
   }
   async updateDocument(
     id: string,
-    { title, content, featuredImage, status }: Omit<Document, '$id' | 'id' | 'userId'>
-  ): Promise<any> {
+    {
+      title,
+      content,
+      featuredImage,
+      status,
+    }: Omit<Document, '$id' | 'id' | 'userId'>
+  ): Promise<Models.Document | void> {
     try {
       const res = await this.databases.updateDocument(
         conf.databaseId,
@@ -164,12 +189,12 @@ class Service {
     try {
       return await this.storage.createFile(conf.bucketId, ID.unique(), file)
     } catch (error) {
-      console.log('Appwrite service :: createFile() :: ', error);
-      throw error;
+      console.log('Appwrite service :: createFile() :: ', error)
+      throw error
     }
   }
 
-  async deleteFile(fileId: string): Promise<{}> {
+  async deleteFile(fileId: string): Promise< {} | boolean> {
     try {
       return await this.storage.deleteFile(conf.bucketId, fileId)
     } catch (error) {
@@ -178,7 +203,7 @@ class Service {
     }
   }
 
-  getFilePreview(fileId: string): any {
+  getFilePreview(fileId: string): string {
     return this.storage.getFilePreview(conf.bucketId, fileId).href
   }
 }
