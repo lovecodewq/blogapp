@@ -14,7 +14,6 @@ function App() {
   const dispatch = useDispatch()
   const authStatus = useSelector((state: RootState) => state.auth.status)
   useEffect(() => {
-    console.log(`log status: ${authStatus}`)
     if (authStatus) {
       service
         .getCurrentUser()
