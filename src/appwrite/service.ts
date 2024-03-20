@@ -24,7 +24,7 @@ interface Document {
   id: string
   title?: string
   content?: string
-  featuredImage?: string
+  featuredImageFileId?: string
   status?: string
   userId?: string
   slug?: string
@@ -128,40 +128,35 @@ class Service {
   }
 
   async creatDocument({
-    id,
     title,
     content,
-    featuredImage,
+    featuredImageFileId,
     status,
     userId,
-  }: Omit<Document, '$id'>): Promise<Models.Document | void> {
+  }: Models.Document): Promise<Models.Document | void> {
     try {
       const respose = await this.databases.createDocument(
         conf.databaseId,
         conf.collectionId,
-        id,
-        { title, content, featuredImage, status, userId }
+        ID.unique(),
+        { title, content, featuredImageFileId, status, userId }
       )
       return respose
     } catch (error) {
-      console.log('Appwrite service :: listDocuments :: ', error)
+      console.log('Appwrite service :: createDocument :: ', error)
     }
   }
+
   async updateDocument(
-    id: string,
-    {
-      title,
-      content,
-      featuredImage,
-      status,
-    }: Omit<Document, '$id' | 'id' | 'userId'>
+    $id: string,
+    document: Models.Document
   ): Promise<Models.Document | void> {
     try {
       const res = await this.databases.updateDocument(
         conf.databaseId,
         conf.collectionId,
-        id,
-        { title, content, featuredImage, status }
+        $id,
+        document
       )
       return res
     } catch (error) {
@@ -194,7 +189,7 @@ class Service {
     }
   }
 
-  async deleteFile(fileId: string): Promise< {} | boolean> {
+  async deleteFile(fileId: string): Promise<{} | boolean> {
     try {
       return await this.storage.deleteFile(conf.bucketId, fileId)
     } catch (error) {

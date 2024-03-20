@@ -5,11 +5,11 @@ import service from '../appwrite/service'
 interface PostCardProps {
   $id: string
   title: string
-  featuredImage: string
+  featuredImageFileId: string
 }
 
-function PostCard({ $id, title, featuredImage }: PostCardProps) {
-  const image_uri = service.getFilePreview(featuredImage);
+function PostCard({ $id, title, featuredImageFileId }: PostCardProps) {
+  const image_uri = service.getFilePreview(featuredImageFileId);
   return (
     <Link to={`/post/${$id}`}>
       <div className='w-full bg-gray-100 rounded-xl p-4'>

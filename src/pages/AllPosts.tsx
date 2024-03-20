@@ -1,15 +1,16 @@
-import React from 'react'
 import service from '../appwrite/service'
 import { useState } from 'react'
 import { useEffect } from 'react'
 import Container from '../components/container/Container'
 import PostCard from '../components/PostCard'
+import { Models } from 'appwrite'
 
 function AllPosts() {
-  const [posts, setPosts] = useState([])
+  const [posts, setPosts] = useState<Models.Document[]>([])
 
   useEffect(() => {
-    service.listDocuments([]).then((posts) => {
+    service.listDocuments().then((posts: Models.DocumentList<Models.Document> | void) => {
+      console.log("posts ", posts);
       if (posts) {
         setPosts(posts.documents)
       }

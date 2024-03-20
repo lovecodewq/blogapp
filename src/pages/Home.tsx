@@ -19,7 +19,11 @@ function Home() {
         console.error('Failed to fetch documents: ', error)
       }
     }
-    fetchDocumetns()
+    fetchDocumetns().then(() => {
+      {
+        console.log('document', documents)
+      }
+    })
   }, [])
 
   if (documents.length === 0) {

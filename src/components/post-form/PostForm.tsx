@@ -7,56 +7,68 @@ import Select from '../Select'
 import service from '../../appwrite/service'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import type { Document } from '../../appwrite/service'
 import { RootState } from '../../store/store'
+import { Models } from 'appwrite'
 
-const PostForm: React.FC<Document | null> = (post) => {
-  const { register, handleSubmit, watch, setValue, control, getValues } =
-    useForm({
-      defaultValues: {
-        title: post?.title || '',
-        slug: post?.slug || '',
-        content: post?.content || '',
-        status: post?.status || 'active',
-        image: [],
-        $id: undefined,
-        id: undefined,
-        userId: undefined,
-        featuredImage: undefined,
-      },
-    })
+interface PostFromPros {
+  document: Models.Document
+}
+
+const PostForm: React.FC<PostFromPros> = ({ document }) => {
   const navigate = useNavigate()
   const userData = useSelector((state: RootState) => state.auth.userData)
-  const submit: SubmitHandler<Document> = async (data: Document) => {
-    if (post) {
-      const file = data.image[0]
-        ? await service.createFile(data.image[0])
+  console.log('userData: ', userData)
+  const { register, handleSubmit, watch, setValue, control, getValues } =
+    useForm<Models.Document>({
+      defaultValues: {
+        title: document?.title || '',
+        $id: document?.$id || '',
+        content: document?.content || '',
+        status: document?.status || 'active',
+        image: [],
+        userId: undefined,
+        featuredImageFileId: undefined,
+      },
+    })
+
+  const submit: SubmitHandler<Models.Document> = async (
+    form_data: Models.Document
+  ) => {
+    console.log('form data', form_data)
+    if (document) {
+      console.log('update document ', document)
+      const file = document.image[0]
+        ? await service.createFile(form_data.image[0])
         : null
 
-      if (file && post.featuredImage) {
-        service.deleteFile(post.featuredImage)
+      if (file && document.featuredImageFileId) {
+        service.deleteFile(document.featuredImageFileId)
       }
-      if (post.$id) {
-        const dbPost = await service.updateDocument(post.$id, {
-          ...data,
-          featuredImage: file ? file.$id : undefined,
-        })
+      if (document.$id) {
+        document.tilte = form_data.title
+        document.content = form_data.content
+        document.featuredImageFileId = file?.$id
+
+        const dbPost = await service.updateDocument(document.$id, document)
         if (dbPost) {
           navigate(`/post/${dbPost.$id}`)
         }
       }
     } else {
-      const file = await service.createFile(data.image[0])
+      const file = await service.createFile(form_data.image[0])
+      console.log('create file ', file)
+
       if (file) {
         const fileId = file.$id
-        data.featuredImage = fileId
-        const dbPost = await service.creatDocument({
-          ...data,
+        form_data.featuredImageFileId = fileId
+        console.log(form_data)
+        const post_document = await service.creatDocument({
+          ...form_data,
           userId: userData.$id,
         })
-
-        if (dbPost) {
-          navigate(`/post/${dbPost.$id}`)
+        console.log('post_document', post_document)
+        if (post_document) {
+          navigate(`/post/${post_document.$id}`)
         }
       }
     }
@@ -92,11 +104,11 @@ const PostForm: React.FC<Document | null> = (post) => {
           label='Slug :'
           placeholder='Slug'
           className='mb-4'
-          {...register('slug', { required: true })}
+          {...register('$id', { required: true })}
           onInput={(e) => {
             const slug = slugTransform(e.currentTarget.value)
             slug &&
-              setValue('slug', slug, {
+              setValue('$id', slug, {
                 shouldValidate: true,
               })
           }}
@@ -114,13 +126,13 @@ const PostForm: React.FC<Document | null> = (post) => {
           type='file'
           className='mb-4'
           accept='image/png, image/jpg, image/jpeg'
-          {...register('image', { required: !post })}
+          {...register('image', { required: !document })}
         />
-        {post && post.featuredImage && (
+        {document && document.featuredImageFileId && (
           <div className='w-full mb-4'>
             <img
-              src={service.getFilePreview(post.featuredImage)}
-              alt={post.title}
+              src={service.getFilePreview(document.featuredImageFileId)}
+              alt={document.title}
               className='rounded-lg'
             />
           </div>
@@ -133,10 +145,10 @@ const PostForm: React.FC<Document | null> = (post) => {
         />
         <Button
           type='submit'
-          bgColor={post ? 'bg-green-500' : undefined}
+          bgColor={document ? 'bg-green-500' : undefined}
           className='w-full'
         >
-          {post ? 'Update' : 'Submit'}
+          {document ? 'Update' : 'Submit'}
         </Button>
       </div>
     </form>

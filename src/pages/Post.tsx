@@ -38,7 +38,7 @@ function Post() {
       try {
         const status = await service.deleteDocument(post.$id)
         if (status) {
-          service.deleteFile(post.featuredImage)
+          service.deleteFile(post.featuredImageFileId)
           navigate('/')
         }
       } catch (error) {
@@ -53,7 +53,7 @@ function Post() {
       <Container>
         <div className='w-full flex justify-center mb-4 relative border rounded-xl p-2'>
           <img
-            src={service.getFilePreview(post.featuredImage)}
+            src={service.getFilePreview(post.featuredImageFileId)}
             alt={post.title}
             className='rounded-xl'
           />

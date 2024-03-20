@@ -6,17 +6,18 @@ import { useEffect } from 'react'
 import Container from '../components/container/Container'
 import PostForm from '../components/post-form/PostForm'
 import service from '../appwrite/service'
+import { Models } from 'appwrite'
 
 function EditPost() {
-  const [post, setPost] = useState(null)
+  const [document, setDocument] = useState<Models.Document>()
   const { slug } = useParams()
   const navigate = useNavigate()
 
   useEffect(() => {
     if (slug) {
-      service.getDocument(slug).then((post) => {
-        if (post) {
-          setPost(post)
+      service.getDocument(slug).then((document) => {
+        if (document) {
+          setDocument(document)
         } else {
           navigate('/')
         }
@@ -26,7 +27,7 @@ function EditPost() {
   return (
     <div>
       <Container>
-        <PostForm post={post} />
+        <PostForm document={document} />
       </Container>
     </div>
   )
