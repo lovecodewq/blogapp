@@ -1,20 +1,25 @@
 import service from '../appwrite/service'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Container from '../components/container/Container'
 import PostCard from '../components/PostCard'
-import { Models } from 'appwrite'
+import { BlogPost } from '../types/blogTypes'
 
 function AllPosts() {
-  const [posts, setPosts] = useState<Models.Document[]>([])
+  const [posts, setPosts] = useState<BlogPost[]>([])
 
   useEffect(() => {
-    service.listDocuments().then((posts: Models.DocumentList<Models.Document> | void) => {
-      console.log("posts ", posts);
-      if (posts) {
-        setPosts(posts.documents)
+    const fetchBlogPosts = async () => {
+      try {
+        const posts = await service.listBlogPosts()
+        if (posts) {
+          setPosts(posts.documents)
+        }
+      } catch (error) {
+        console.error('Failed to fetch documents: ', error)
+        throw error
       }
-    })
+    }
+    fetchBlogPosts()
   }, [])
   return (
     <div className='w-full py-8'>

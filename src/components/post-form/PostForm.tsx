@@ -8,68 +8,68 @@ import service from '../../appwrite/service'
 import { useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { RootState } from '../../store/store'
-import { Models } from 'appwrite'
+import { BlogPost } from '../../types/blogTypes'
 
 interface PostFromPros {
-  document: Models.Document
+  post: BlogPost
 }
 
-const PostForm: React.FC<PostFromPros> = ({ document }) => {
+const PostForm: React.FC<PostFromPros> = ({ post }) => {
   const navigate = useNavigate()
   const userData = useSelector((state: RootState) => state.auth.userData)
   console.log('userData: ', userData)
   const { register, handleSubmit, watch, setValue, control, getValues } =
-    useForm<Models.Document>({
+    useForm<BlogPost>({
       defaultValues: {
-        title: document?.title || '',
-        $id: document?.$id || '',
-        content: document?.content || '',
-        status: document?.status || 'active',
-        image: [],
+        $id: post?.$id || '',
+        title: post?.title || '',
+        content: post?.content || '',
+        status: post?.status || 'active',
         userId: undefined,
         featuredImageFileId: undefined,
+        image: [],
+        slug: post?.$id || '',
       },
     })
 
-  const submit: SubmitHandler<Models.Document> = async (
-    form_data: Models.Document
+  const submit: SubmitHandler<BlogPost> = async (
+    data: BlogPost
   ) => {
-    console.log('form data', form_data)
-    if (document) {
-      console.log('update document ', document)
-      const file = document.image[0]
-        ? await service.createFile(form_data.image[0])
+    console.log('form data', data)
+    if (post) {
+      console.log('try update post ', post)
+      const file = data.image[0]
+        ? await service.createFile(data.image[0])
         : null
 
-      if (file && document.featuredImageFileId) {
-        service.deleteFile(document.featuredImageFileId)
+      // upate featured image file
+      if (file && post.featuredImageFileId) {
+        service.deleteFile(post.featuredImageFileId)
+        post.featuredImageFileId = file.$id
       }
-      if (document.$id) {
-        document.tilte = form_data.title
-        document.content = form_data.content
-        document.featuredImageFileId = file?.$id
-
-        const dbPost = await service.updateDocument(document.$id, document)
+    
+      if (post.$id) {
+        post.tilte = data.title
+        post.content = data.content
+        const dbPost = await service.updateDocument(post.$id, post)
         if (dbPost) {
           navigate(`/post/${dbPost.$id}`)
         }
       }
     } else {
-      const file = await service.createFile(form_data.image[0])
-      console.log('create file ', file)
-
+      // upload image file
+      const file = await service.createFile(data.image[0]);
       if (file) {
         const fileId = file.$id
-        form_data.featuredImageFileId = fileId
-        console.log(form_data)
-        const post_document = await service.creatDocument({
-          ...form_data,
-          userId: userData.$id,
-        })
-        console.log('post_document', post_document)
-        if (post_document) {
-          navigate(`/post/${post_document.$id}`)
-        }
+        data.featuredImageFileId = fileId
+      }
+      const post = await service.creatPost({
+        ...data,
+        userId: userData.$id,
+      })
+      console.log('created post ', post)
+      if (post) {
+        navigate(`/post/${post.$id}`)
       }
     }
   }

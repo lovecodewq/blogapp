@@ -6,19 +6,20 @@ import Container from '../components/container/Container'
 import parse from 'html-react-parser'
 import { useSelector } from 'react-redux'
 import type { RootState } from '../store/store'
+import { BlogPost } from '../types/blogTypes'
 
 function Post() {
-  const [post, setPost] = useState(null)
-  const { slug } = useParams()
+  const [post, setPost] = useState<BlogPost>()
+  const { postId } = useParams()
   const navigate = useNavigate()
   const userData = useSelector((state: RootState) => state.auth.userData)
   const isAuthor = post && userData ? post.userId === userData.$id : false
 
   useEffect(() => {
     const fetchPost = async () => {
-      if (slug) {
+      if (postId) {
         try {
-          const post = await service.getDocument(slug)
+          const post = await service.getBlogPost(postId)
           if (post) {
             setPost(post)
           } else {
@@ -31,7 +32,7 @@ function Post() {
       }
     }
     fetchPost()
-  }, [slug, navigate])
+  }, [postId, navigate])
 
   const deletePost = async () => {
     if (post && post.$id) {

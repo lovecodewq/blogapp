@@ -7,27 +7,27 @@ import Container from '../components/container/Container'
 import PostForm from '../components/post-form/PostForm'
 import service from '../appwrite/service'
 import { Models } from 'appwrite'
-
+import { BlogPost } from '../types/blogTypes'
 function EditPost() {
-  const [document, setDocument] = useState<Models.Document>()
-  const { slug } = useParams()
+  const [post, setPost] = useState<BlogPost>()
+  const { postId } = useParams()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (slug) {
-      service.getDocument(slug).then((document) => {
-        if (document) {
-          setDocument(document)
+    if (postId) {
+      service.getBlogPost(postId).then((post) => {
+        if (post) {
+          setPost(post)
         } else {
           navigate('/')
         }
       })
     }
-  }, [slug, navigate])
+  }, [postId, navigate])
   return (
     <div>
       <Container>
-        <PostForm document={document} />
+        <PostForm post={post} />
       </Container>
     </div>
   )

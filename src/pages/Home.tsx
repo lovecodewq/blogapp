@@ -1,17 +1,16 @@
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Container from '../components/container/Container'
 import PostCard from '../components/PostCard'
 import service from '../appwrite/service'
-import { Models } from 'appwrite'
+import { BlogPost } from '../types/blogTypes'
 
 function Home() {
-  const [documents, setDocuments] = useState<Models.Document[]>([])
+  const [documents, setDocuments] = useState<BlogPost[]>([])
 
   useEffect(() => {
-    const fetchDocumetns = async () => {
+    const fetchBlogPosts = async () => {
       try {
-        const response = await service.listDocuments()
+        const response = await service.listBlogPosts()
         if (response) {
           setDocuments(response.documents)
         }
@@ -19,11 +18,7 @@ function Home() {
         console.error('Failed to fetch documents: ', error)
       }
     }
-    fetchDocumetns().then(() => {
-      {
-        console.log('document', documents)
-      }
-    })
+    fetchBlogPosts()
   }, [])
 
   if (documents.length === 0) {

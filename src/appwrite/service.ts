@@ -10,6 +10,7 @@ import {
 } from 'appwrite'
 
 import conf from '../conf/conf'
+import { BlogPost } from '../types/blogTypes'
 
 interface UserAccount {
   email: string
@@ -18,17 +19,6 @@ interface UserAccount {
 }
 interface UserPreferences {
   darkMode: boolean
-}
-interface Document {
-  $id?: string
-  id: string
-  title?: string
-  content?: string
-  featuredImageFileId?: string
-  status?: string
-  userId?: string
-  slug?: string
-  image: File[]
 }
 
 class Service {
@@ -81,13 +71,13 @@ class Service {
     }
   }
 
-  async getCurrentUser(): Promise<Models.User<UserPreferences> | null> {
+  async getCurrentUser(): Promise<Models.User<UserPreferences>> {
     try {
       return await this.account.get()
     } catch (error) {
       console.log('Appwrite service :: getCurrentUser() :: ', error)
+      throw error
     }
-    return null
   }
 
   async logout(): Promise<void> {
@@ -95,13 +85,14 @@ class Service {
       await this.account.deleteSessions()
     } catch (error) {
       console.log('Appwrite service :: logout() :: ', error)
+      throw error
     }
   }
 
   // document
-  async getDocument(documentId: string): Promise<Models.Document | void> {
+  async getBlogPost(documentId: string): Promise<BlogPost> {
     try {
-      const res = await this.databases.getDocument(
+      const res = await this.databases.getDocument<BlogPost>(
         conf.databaseId,
         conf.collectionId,
         documentId
@@ -109,14 +100,15 @@ class Service {
       return res
     } catch (error) {
       console.log('Appwrite service :: getDocument :: ', error)
+      throw error
     }
   }
 
-  async listDocuments(
+  async listBlogPosts(
     queries = [Query.equal('status', ['active'])]
-  ): Promise<Models.DocumentList<Models.Document> | void> {
+  ): Promise<Models.DocumentList<BlogPost>> {
     try {
-      const respose = await this.databases.listDocuments(
+      const respose = await this.databases.listDocuments<BlogPost>(
         conf.databaseId,
         conf.collectionId,
         queries
@@ -124,18 +116,19 @@ class Service {
       return respose
     } catch (error) {
       console.log('Appwrite service :: listDocuments :: ', error)
+      throw error
     }
   }
 
-  async creatDocument({
+  async creatPost({
     title,
     content,
     featuredImageFileId,
     status,
     userId,
-  }: Models.Document): Promise<Models.Document | void> {
+  }: BlogPost): Promise<BlogPost> {
     try {
-      const respose = await this.databases.createDocument(
+      const respose = await this.databases.createDocument<BlogPost>(
         conf.databaseId,
         conf.collectionId,
         ID.unique(),
@@ -144,15 +137,13 @@ class Service {
       return respose
     } catch (error) {
       console.log('Appwrite service :: createDocument :: ', error)
+      throw error
     }
   }
 
-  async updateDocument(
-    $id: string,
-    document: Models.Document
-  ): Promise<Models.Document | void> {
+  async updateDocument($id: string, document: BlogPost): Promise<BlogPost> {
     try {
-      const res = await this.databases.updateDocument(
+      const res = await this.databases.updateDocument<BlogPost>(
         conf.databaseId,
         conf.collectionId,
         $id,
@@ -161,6 +152,7 @@ class Service {
       return res
     } catch (error) {
       console.log('Appwrite service :: updateDocument :: ', error)
+      throw error
     }
   }
 
@@ -175,7 +167,7 @@ class Service {
       return true
     } catch (error) {
       console.log('Appwrite service :: deleteDocument :: ', error)
-      return false
+      throw error
     }
   }
 
@@ -194,7 +186,7 @@ class Service {
       return await this.storage.deleteFile(conf.bucketId, fileId)
     } catch (error) {
       console.log('Appwrite service :: deleteFile() :: ', error)
-      return false
+      throw error
     }
   }
 
@@ -205,5 +197,4 @@ class Service {
 
 const service = new Service()
 
-export type { Document }
 export default service
