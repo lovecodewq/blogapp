@@ -53,24 +53,24 @@ function Post() {
   return post ? (
     <div className='py-8'>
       <Container>
+        {isAuthor && (
+          <div className='items-center mb-4   text-right'>
+            <Link to={`/edit-post/${post.$id}`}>
+              <Button bgColor='bg-green-500' className='mr-3'>
+                Edit
+              </Button>
+            </Link>
+            <Button bgColor='bg-red-500' onClick={deletePost}>
+              Delete
+            </Button>
+          </div>
+        )}
         <div className='w-full flex justify-center mb-4 relative border rounded-xl p-2'>
           <img
             src={service.getFilePreview(post.featuredImageFileId)}
             alt={post.title}
             className='rounded-xl'
           />
-          {isAuthor && (
-            <div>
-              <Link to={`/edit-post/${post.$id}`}>
-                <Button bgColor='bg-green-500' className='mr-3'>
-                  Edit
-                </Button>
-              </Link>
-              <Button bgColor='bg-red-500' onClick={deletePost}>
-                Delete
-              </Button>
-            </div>
-          )}
         </div>
         <div className='w-full mb=6'>
           <h1 className='text-2xl font-bold'>{post.title}</h1>
