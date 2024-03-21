@@ -5,23 +5,23 @@ import service from '../appwrite/service'
 import { BlogPost } from '../types/blogTypes'
 
 function Home() {
-  const [documents, setDocuments] = useState<BlogPost[]>([])
+  const [posts, setPosts] = useState<BlogPost[]>([])
 
   useEffect(() => {
     const fetchBlogPosts = async () => {
       try {
         const response = await service.listBlogPosts()
         if (response) {
-          setDocuments(response.documents)
+          setPosts(response.documents)
         }
       } catch (error) {
-        console.error('Failed to fetch documents: ', error)
+        console.error('Failed to fetch posts: ', error)
       }
     }
     fetchBlogPosts()
   }, [])
 
-  if (documents.length === 0) {
+  if (posts.length === 0) {
     return (
       <div className='w-full py-8'>
         <Container>
@@ -37,9 +37,9 @@ function Home() {
     <div className='w-full py-8'>
       <Container>
         <div className='flex flex-wrap'>
-          {documents.map((document) => (
-            <div className='p-2 w-1/4' key={document.$id}>
-              <PostCard {...document} />
+          {posts.map((post) => (
+            <div className='p-2 w-1/4' key={post.$id}>
+              <PostCard {...post} />
             </div>
           ))}
         </div>

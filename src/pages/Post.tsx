@@ -9,8 +9,8 @@ import type { RootState } from '../store/store'
 import { BlogPost } from '../types/blogTypes'
 
 function Post() {
-  const [post, setPost] = useState<BlogPost>()
   const { postId } = useParams()
+  const [post, setPost] = useState<BlogPost>()
   const navigate = useNavigate()
   const userData = useSelector((state: RootState) => state.auth.userData)
   const isAuthor = post && userData ? post.userId === userData.$id : false
@@ -21,6 +21,7 @@ function Post() {
         try {
           const post = await service.getBlogPost(postId)
           if (post) {
+            console.log('cureent post ', post)
             setPost(post)
           } else {
             navigate('/')

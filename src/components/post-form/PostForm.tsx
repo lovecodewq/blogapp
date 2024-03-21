@@ -11,7 +11,7 @@ import { RootState } from '../../store/store'
 import { BlogPost } from '../../types/blogTypes'
 
 interface PostFromPros {
-  post: BlogPost
+  post?: BlogPost
 }
 
 const PostForm: React.FC<PostFromPros> = ({ post }) => {
@@ -32,9 +32,7 @@ const PostForm: React.FC<PostFromPros> = ({ post }) => {
       },
     })
 
-  const submit: SubmitHandler<BlogPost> = async (
-    data: BlogPost
-  ) => {
+  const submit: SubmitHandler<BlogPost> = async (data: BlogPost) => {
     console.log('form data', data)
     if (post) {
       console.log('try update post ', post)
@@ -47,7 +45,7 @@ const PostForm: React.FC<PostFromPros> = ({ post }) => {
         service.deleteFile(post.featuredImageFileId)
         post.featuredImageFileId = file.$id
       }
-    
+
       if (post.$id) {
         post.tilte = data.title
         post.content = data.content
@@ -58,7 +56,7 @@ const PostForm: React.FC<PostFromPros> = ({ post }) => {
       }
     } else {
       // upload image file
-      const file = await service.createFile(data.image[0]);
+      const file = await service.createFile(data.image[0])
       if (file) {
         const fileId = file.$id
         data.featuredImageFileId = fileId
@@ -126,13 +124,13 @@ const PostForm: React.FC<PostFromPros> = ({ post }) => {
           type='file'
           className='mb-4'
           accept='image/png, image/jpg, image/jpeg'
-          {...register('image', { required: !document })}
+          {...register('image', { required: !post })}
         />
-        {document && document.featuredImageFileId && (
+        {post && post.featuredImageFileId && (
           <div className='w-full mb-4'>
             <img
-              src={service.getFilePreview(document.featuredImageFileId)}
-              alt={document.title}
+              src={service.getFilePreview(post.featuredImageFileId)}
+              alt={post.title}
               className='rounded-lg'
             />
           </div>
@@ -145,10 +143,10 @@ const PostForm: React.FC<PostFromPros> = ({ post }) => {
         />
         <Button
           type='submit'
-          bgColor={document ? 'bg-green-500' : undefined}
+          bgColor={post ? 'bg-green-500' : undefined}
           className='w-full'
         >
-          {document ? 'Update' : 'Submit'}
+          {post ? 'Update' : 'Submit'}
         </Button>
       </div>
     </form>
