@@ -1,6 +1,13 @@
-import React, { useId, ForwardedRef } from 'react'
+import React, { useId } from 'react'
 
-const Input = React.forwardRef(
+interface InputProps {
+  lable: string;
+  type: string;
+  className: string;
+  [key:string]: any;
+}
+
+const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ label, type = 'text', className = '', ...props }, ref: any) => {
     const id = useId()
     return (
