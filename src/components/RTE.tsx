@@ -1,15 +1,18 @@
 import { Controller, Control } from 'react-hook-form'
 import { Editor } from '@tinymce/tinymce-react'
 import conf from '../conf/conf'
+import { BlogPost } from '../types/blogTypes'
+import React from 'react'
 
 interface RTEProps {
   name: string
-  control: Control
+  control: Control<BlogPost>
   label: string
   defaultValue: string
+  [key: string]: any
 }
 
-function RTE({ name, control, label, defaultValue = '' }: RTEProps) {
+const RTE: React.FC<RTEProps> =({  name, control, label, defaultValue = '' }) => {
   return (
     <div className='w-full'>
       {label && <label className='inline-block mb-1 pl-1'>{label}</label>}
