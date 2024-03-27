@@ -18,19 +18,18 @@ const PostForm: React.FC<PostFromPros> = ({ post }) => {
   const navigate = useNavigate()
   const userData = useSelector((state: RootState) => state.auth.userData)
   console.log('userData: ', userData)
-  const { register, handleSubmit, watch, setValue, control, getValues } =
+  const { register, handleSubmit, watch, control, getValues } =
     useForm<BlogPost>({
       defaultValues: {
         $id: post?.$id || '',
         title: post?.title || '',
         content: post?.content || '',
         status: post?.status || 'active',
-        userId: undefined,
-        featuredImageFileId: undefined,
+        userId: '',
+        featuredImageFileId: '',
         image: [],
       },
     })
-
   const submit: SubmitHandler<BlogPost> = async (data: BlogPost) => {
     console.log('form data', data)
     if (post) {
